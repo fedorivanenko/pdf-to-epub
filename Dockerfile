@@ -10,13 +10,15 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 \
     libglib2.0-0 \
+    tesseract-ocr \
+    tesseract-ocr-eng \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Download Docling's standard pipeline models at image build time so runtime
-# requests never need to fetch model weights from the network.
+# Bake Docling's standard pipeline models into the image so requests do not
+# download model weights at runtime.
 RUN mkdir -p "$DOCLING_ARTIFACTS_PATH" \
     && docling-tools models download --output-dir "$DOCLING_ARTIFACTS_PATH"
 
